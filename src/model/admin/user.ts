@@ -21,6 +21,13 @@ interface IAddUserParams { // 添加用户入参
     status: number | string;
 }
 
+interface IUpdateUserInfoParams { // 修改用户信息
+    id: number | string;
+    username: string;
+    password: string;
+    status: number | string;
+}
+
 export default class extends think.Model {
     /**
      * @description 获取用户
@@ -50,12 +57,12 @@ export default class extends think.Model {
 
     /**
      * @description 修改用户信息
-     * @param {Object} userInfo 用户信息
+     * @param {Object} params 用户信息
      */
-    async updateUserInfo(userInfo: object) {
+    async updateUserInfo(params: IUpdateUserInfoParams) {
         return this.where({
-            // id: userInfo.id
-        }).update(userInfo);
+            id: params.id
+        }).update(params);
     }
 
     /**

@@ -24,7 +24,7 @@ export default class extends BaseRest {
         await model.addUser({
             username: this.post('username'),
             password: this.post('password'),
-            status: this.post('status')
+            status: +this.post('status')
         });
         return this.success(null, '添加成功');
     }
@@ -32,7 +32,16 @@ export default class extends BaseRest {
     /**
      * @description 修改用户
      */
-    async putAction() { }
+    async putAction() {
+        const model = this.model('admin/user') as UserModel;
+        await model.updateUserInfo({
+            id: this.id,
+            username: this.post('username'),
+            password: this.post('password'),
+            status: this.post('status')
+        });
+        return this.success(null, '修改成功');
+    }
 
     /**
      * @description 删除用户
