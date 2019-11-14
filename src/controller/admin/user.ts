@@ -24,7 +24,7 @@ export default class extends BaseRest {
         await model.addUser({
             username: this.post('username'),
             password: this.post('password'),
-            status: +this.post('status')
+            status: this.post('status')
         });
         return this.success(null, '添加成功');
     }
@@ -46,5 +46,12 @@ export default class extends BaseRest {
     /**
      * @description 删除用户
      */
-    async deleteAction() { }
+    async deleteAction() {
+        const model = this.model('admin/user') as UserModel;
+        if (Number(this.id) === 1) {
+            return this.fail(1, '管理员不可删除');
+        }
+        await model.deleteUser(this.id);
+        return this.success(null, '删除成功');
+    }
 }
