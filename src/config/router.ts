@@ -19,5 +19,5 @@ module.exports = [
     /**
      * 公用接口
      */
-    ['/upload/', '/upload', 'rest'], // 公用接口
+    ['/upload/', '/upload', 'rest'], // 上传
 ];

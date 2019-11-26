@@ -10,22 +10,18 @@ interface IGetProductParams { // 获取用户入参
 }
 
 interface IGetProductData { // 数据库查询字段
-    username?: string[];
+    name?: string[];
     status?: number | string;
     create_time?: string[];
 }
 
-interface IAddUserParams { // 添加用户入参
-    username: string;
-    password: string;
-    status: number | string;
-}
-
-interface IUpdateUserInfoParams { // 修改用户信息
-    id: number | string;
-    username: string;
-    password: string;
-    status: number | string;
+interface IProductParams { // 添加商品入参
+    id?: number | string;
+    name: string;
+    description?: string;
+    publish_status: number | string;
+    category_id?: number | string;
+    pic_id?: number | string;
 }
 
 export default class extends think.Model {
@@ -36,7 +32,7 @@ export default class extends think.Model {
     async getProduct(params: IGetProductParams) {
         const data: IGetProductData = {};
         if (params.name) {
-            data.username = ['like', '%' + params.name + '%'];
+            data.name = ['like', '%' + params.name + '%'];
         }
         if (params.publish_status) {
             data.status = params.publish_status;
@@ -47,41 +43,41 @@ export default class extends think.Model {
         return await this.join([
             'product_category ON product.category_id=product_category.id',
             'LEFT JOIN product_pic_info ON product.pic_id=product_pic_info.id'
-          ]).field('product.*,category_name,pic_url').where(data).page(params.page, params.limit).countSelect();
+        ]).field('product.*,category_name,pic_url').where(data).page(params.page, params.limit).countSelect();
     }
 
     /**
-     * @description 添加用户
-     * @param {Object} params 用户信息
+     * @description 添加商品
+     * @param {Object} params 商品信息
      */
-    async addUser(params: IAddUserParams) {
+    async addProduct(params: IProductParams) {
         return this.add(params);
     }
 
     /**
-     * @description 修改用户信息
-     * @param {Object} params 用户信息
+     * @description 修改商品信息
+     * @param {Object} params 商品信息
      */
-    async updateUserInfo(params: IUpdateUserInfoParams) {
+    async updateProduct(params: IProductParams) {
         return this.where({
             id: params.id
         }).update(params);
     }
 
     /**
-     * @description 删除用户
-     * @param {Int} id 用户id
+     * @description 删除商品
+     * @param {Int} id 商品id
      */
-    async deleteUser(id: number | string) {
+    async deleteProduct(id: number | string) {
         return this.where({ id }).delete();
     }
 
     /**
-     * @description 查找用户
-     * @param {String} username 用户名称
-     * @returns {Promise<void>}
+     * @description 查找商品
+     * @param id 商品id
      */
-    async findUser(username: string): Promise<void> {
-        return this.where({ username }).find();
+    async findSingleProduct(id: number | string) {
+        return this.where({ id }).find();
     }
+
 }

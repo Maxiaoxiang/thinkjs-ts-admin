@@ -44,7 +44,7 @@ export default class extends think.Model {
      * 获取商品分类列表
      * @param {Object} params
      */
-    async getProduct(params: IGetCategoryParams) {
+    async getArticleList(params: IGetCategoryParams) {
         const data: IGetProductData = {};
         if (params.category_name) {
             data.category_name = ['like', '%' + params.category_name + '%'];
@@ -59,7 +59,7 @@ export default class extends think.Model {
     }
 
     /**
-     * 其他model获取商品分类列表
+     * 其他model获取文章分类列表
      * @param {Object} params
      */
     async getOtherCategoryList(params: IGetCategoryParams) {

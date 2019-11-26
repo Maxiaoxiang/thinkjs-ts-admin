@@ -2,13 +2,14 @@
   "name": "thinkjs-ts-admin",
   "description": "application created by thinkjs",
   "version": "1.0.0",
-  "author": "马晓翔 <maxx@zoenet.cn>",
+  "author": "Maxiaoxiang <251445460@qq.com>",
   "scripts": {
     "start": "node development.js",
     "compile": "npm run lint && tsc",
     "lint": "tslint \"src/**/*.ts\""
   },
   "dependencies": {
+    "qiniu": "^7.2.2",
     "qiniu-js": "^2.5.5",
     "think-cache": "^1.0.7",
     "think-cache-file": "^1.0.8",
@@ -21,13 +22,14 @@
     "thinkjs": "^3.2.3"
   },
   "devDependencies": {
-    "typescript": "^2.5.3",
     "@types/koa": "*",
+    "@types/qiniu-js": "^2.5.0",
     "node-notifier": "^5.0.2",
-    "think-watcher": "^3.0.0",
     "think-inspect": "0.0.2",
     "think-typescript": "^1.0.4",
-    "tslint": "^5.8.0"
+    "think-watcher": "^3.0.0",
+    "tslint": "^5.8.0",
+    "typescript": "^2.5.3"
   },
   "repository": "",
   "license": "MIT",
@@ -39,7 +41,7 @@
     "metadata": {
       "name": "thinkjs-ts-admin",
       "description": "application created by thinkjs",
-      "author": "lS� <maxx@zoenet.cn>"
+      "author": "Maxiaoxiang <251445460@qq.com>"
     },
     "projectName": "thinkjs-ts-admin",
     "template": "typescript",

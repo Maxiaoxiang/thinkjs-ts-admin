@@ -1,6 +1,6 @@
 import BaseRest from '../rest';
 import ProductModel from '../../model/admin/product';
-import { think } from 'thinkjs';
+import ProductPicInfoModel from '../../model/admin/product_pic_info';
 
 export default class extends BaseRest {
     /**
@@ -13,45 +13,52 @@ export default class extends BaseRest {
     }
 
     /**
-     * @description 添加用户
+     * @description 添加商品
      */
     async postAction() {
-        const model = this.model('admin/product') as ProductModel;
-        const data = await model.findUser(this.post('username'));
-        if (!think.isEmpty(data)) {
-            return this.fail(1, '用户名已存在');
-        }
-        await model.addUser({
-            username: this.post('username'),
-            password: this.post('password'),
-            status: this.post('status')
+        const productPicInfoModel = this.model('admin/product_pic_info') as ProductPicInfoModel;
+        const productModel = this.model('admin/product') as ProductModel;
+        await productModel.addProduct({
+            name: this.post('name'),
+            description: this.post('description'),
+            publish_status: this.post('publish_status'),
+            category_id: this.post('category_id'),
+            pic_id: await productPicInfoModel.addProductPic({ // 联动添加商品图片
+                pic_url: this.post('pic_hash')
+            })
         });
         return this.success(null, '添加成功');
     }
 
     /**
-     * @description 修改用户
+     * @description 修改商品
      */
     async putAction() {
+        const productPicInfoModel = this.model('admin/product_pic_info') as ProductPicInfoModel;
         const model = this.model('admin/product') as ProductModel;
-        await model.updateUserInfo({
+        // 获取当前商品数据
+        const data: { pic_id: number, pic_url: string } = await model.findSingleProduct(this.id);
+        // 商品pic_id联动修改图片链接
+        await productPicInfoModel.updateProductPic({
+            id: data.pic_id,
+            pic_url: this.post('pic_hash')
+        });
+        await model.updateProduct({
             id: this.id,
-            username: this.post('username'),
-            password: this.post('password'),
-            status: this.post('status')
+            name: this.post('name'),
+            description: this.post('description'),
+            publish_status: this.post('publish_status'),
+            category_id: this.post('category_id')
         });
         return this.success(null, '修改成功');
     }
 
     /**
-     * @description 删除用户
+     * @description 删除商品
      */
     async deleteAction() {
         const model = this.model('admin/product') as ProductModel;
-        if (Number(this.id) === 1) {
-            return this.fail(1, '管理员不可删除');
-        }
-        await model.deleteUser(this.id);
+        await model.deleteProduct(this.id);
         return this.success(null, '删除成功');
     }
 }
