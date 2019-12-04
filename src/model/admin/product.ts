@@ -38,12 +38,12 @@ export default class extends think.Model {
             data.status = params.publish_status;
         }
         if (params.startDate && params.endDate) {
-            data['product.create_time'] = ['between', params.startDate + ',' + params.endDate];
+            data['t_product.create_time'] = ['between', params.startDate + ',' + params.endDate];
         }
         return await this.join([
-            'product_category ON product.category_id=product_category.id',
-            'LEFT JOIN product_pic_info ON product.pic_id=product_pic_info.id'
-        ]).field('product.*,category_name,pic_url').where(data).page(params.page, params.limit).countSelect();
+            't_product_category ON t_product.category_id=t_product_category.id',
+            'LEFT JOIN t_product_pic_info ON t_product.pic_id=t_product_pic_info.id'
+        ]).field('t_product.*,category_name,pic_url').where(data).page(params.page, params.limit).countSelect();
     }
 
     /**

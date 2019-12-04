@@ -37,7 +37,7 @@ exports.model = {
   mysql: {
     handle: mysql,
     database: 'platform',
-    prefix: '',
+    prefix: 't_',
     encoding: 'utf8',
     host: '127.0.0.1',
     port: 3306,
@@ -57,8 +57,8 @@ exports.session = {
   type: 'file',
   common: {
     cookie: {
-      name: 'thinkjs'
-      // keys: ['werwer', 'werwer'],
+      name: 'thinkjs',
+      // keys: ['signature key'],
       // signed: true
     }
   },

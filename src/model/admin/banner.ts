@@ -38,9 +38,9 @@ export default class extends think.Model {
             data.publish_status = params.publish_status;
         }
         if (params.startDate && params.endDate) {
-            data['banner.create_time'] = ['between', params.startDate + ',' + params.endDate];
+            data['t_banner.create_time'] = ['between', params.startDate + ',' + params.endDate];
         }
-        return await this.field('banner.*').where(data).page(params.page, params.limit).countSelect();
+        return await this.field('t_banner.*').where(data).page(params.page, params.limit).countSelect();
     }
 
     /**

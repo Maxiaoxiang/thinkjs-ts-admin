@@ -19,6 +19,10 @@ interface IAddUserParams { // 添加用户入参
     username: string;
     password: string;
     status: number | string;
+    create_user?: number | string;
+    create_username?: string;
+    update_user?: number | string;
+    update_username?: string;
 }
 
 interface IUpdateUserInfoParams { // 修改用户信息
@@ -26,6 +30,8 @@ interface IUpdateUserInfoParams { // 修改用户信息
     username: string;
     password: string;
     status: number | string;
+    update_user?: number | string;
+    update_username?: string;
 }
 
 export default class extends think.Model {

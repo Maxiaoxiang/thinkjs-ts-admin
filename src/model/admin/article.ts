@@ -40,11 +40,11 @@ export default class extends think.Model {
             data.publish_status = params.publish_status;
         }
         if (params.startDate && params.endDate) {
-            data['article.create_time'] = ['between', params.startDate + ',' + params.endDate];
+            data['t_article.create_time'] = ['between', params.startDate + ',' + params.endDate];
         }
         return await this.join([
-            'article_category ON article.category_id=article_category.id',
-        ]).field('article.*,category_name').where(data).page(params.page, params.limit).countSelect();
+            't_article_category ON t_article.category_id=t_article_category.id',
+        ]).field('t_article.*,category_name').where(data).page(params.page, params.limit).countSelect();
     }
 
     /**
