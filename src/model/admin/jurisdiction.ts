@@ -60,7 +60,15 @@ export default class extends think.Model {
         if (params.startDate && params.endDate) {
             data['t_jurisdiction.create_time'] = ['between', params.startDate + ',' + params.endDate];
         }
-        const result = await this.field('t_jurisdiction.*').where(data).page(params.page, 9999).select();
+        return this.reconsitutionTreeList(await this.field('t_jurisdiction.*').where(data).page(params.page, 9999).select());
+    }
+
+    /**
+     * @description 重构权限列表数据结构
+     * @param result 数据
+     * @return {Array} 树型结构
+     */
+    reconsitutionTreeList(result: any): any[] {
         result.forEach((item: { [x: string]: any; }) => { // 取分类名称字段
             item.children = [];
             item.value = item.id;
