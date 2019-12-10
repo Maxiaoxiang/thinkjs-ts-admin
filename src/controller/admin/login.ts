@@ -1,6 +1,5 @@
 import BaseRest from '../rest';
 import LoginModel from '../../model/admin/login';
-import JurisdictionModel from '../../model/admin/jurisdiction';
 import { think } from 'thinkjs';
 
 export default class extends BaseRest {
@@ -9,7 +8,6 @@ export default class extends BaseRest {
      */
     async postAction() {
         const model = this.model('admin/login') as LoginModel;
-        const jurisdictionModel = this.model('admin/jurisdiction') as JurisdictionModel;
         const data = await model.getUser({
             username: this.post('username'),
             password: this.post('password')
@@ -26,10 +24,8 @@ export default class extends BaseRest {
             httpOnly: false,
             path: '/'
         });
-        const menuList = await jurisdictionModel.getJurisdictionList({});
         return this.success({
-            token,
-            menuList
+            token
         }, '登录成功');
     }
 }

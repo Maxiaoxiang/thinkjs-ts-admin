@@ -87,4 +87,12 @@ export default class extends think.Model {
     async findUser(username: string): Promise<void> {
         return this.where({ username }).find();
     }
+
+    /**
+     * @description 根据token获取用户信息
+     * @param {String} id token
+     */
+    async getUserInfoByToken(id: number) {
+        return this.where({ id }).find();
+    }
 }

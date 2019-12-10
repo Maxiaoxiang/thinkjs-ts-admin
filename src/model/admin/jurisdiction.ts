@@ -7,9 +7,11 @@ interface IGetJurisdictionList { // 权限列表入参
     status?: number | string;
     startDate?: string;
     endDate?: string;
+    jurisdictionIdList?: number[];
 }
 
 interface IGetJurisdictionListData { // 数据库查询字段
+    id?: any[];
     name?: string[];
     status?: number | string;
     create_time?: string[];
@@ -59,6 +61,9 @@ export default class extends think.Model {
         }
         if (params.startDate && params.endDate) {
             data['t_jurisdiction.create_time'] = ['between', params.startDate + ',' + params.endDate];
+        }
+        if (params.jurisdictionIdList) {
+            data.id = ['IN', params.jurisdictionIdList];
         }
         return this.reconsitutionTreeList(await this.field('t_jurisdiction.*').where(data).page(params.page, 9999).select());
     }
@@ -111,6 +116,9 @@ export default class extends think.Model {
         }
         if (params.startDate && params.endDate) {
             data['t_jurisdiction.create_time'] = ['between', params.startDate + ',' + params.endDate];
+        }
+        if (params.jurisdictionIdList) {
+            data.id = ['IN', params.jurisdictionIdList];
         }
         return await this.field('t_jurisdiction.*').where(data).page(params.page, params.limit).select();
     }

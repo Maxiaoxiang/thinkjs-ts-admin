@@ -1,14 +1,31 @@
 import BaseRest from '../rest';
 import JurisdictionModel from '../../model/admin/jurisdiction';
+import UserRoleModel from '../../model/admin/user_role';
+import RoleJurisdictionModel from '../../model/admin/role_jurisdiction';
 import { think } from 'thinkjs';
 
 export default class extends BaseRest {
+    /**
+     * @description 获取用户关联的角色拥有的权限
+     */
+    async __before() {
+        const userInfo: any = await this.session('userInfo');
+        const urm = this.model('admin/user_role') as UserRoleModel;
+        const rjm = this.model('admin/role_jurisdiction') as RoleJurisdictionModel;
+        const roleId: number | string = await urm.getUserRole(userInfo.id);
+        const jurisdictionIdList: any[] = await rjm.getRoleJurisdiction(roleId);
+        this.ctx.state.jurisdictionIdList = jurisdictionIdList;
+    }
+
     /**
      * @description 获取权限列表
      */
     async getAction() {
         const model = this.model('admin/jurisdiction') as JurisdictionModel;
-        const data = this.get('limit') > 998 ? await model.getJurisdictionListNoPage(this.get()) : await model.getJurisdictionList(this.get());
+        const getParams: object = this.get('all') ? this.get() : Object.assign({}, this.get(), {
+            jurisdictionIdList: this.ctx.state.jurisdictionIdList // 权限id列表
+        });
+        const data = this.get('limit') > 998 ? await model.getJurisdictionListNoPage(getParams) : await model.getJurisdictionList(getParams);
         return this.success(data);
     }
 

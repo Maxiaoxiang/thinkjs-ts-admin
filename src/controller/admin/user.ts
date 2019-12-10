@@ -1,6 +1,8 @@
 import BaseRest from '../rest';
 import UserModel from '../../model/admin/user';
 import UserRoleModel from '../../model/admin/user_role';
+import JurisdictionModel from '../../model/admin/jurisdiction';
+import RoleJurisdictionModel from '../../model/admin/role_jurisdiction';
 import { think } from 'thinkjs';
 
 export default class extends BaseRest {
@@ -9,7 +11,22 @@ export default class extends BaseRest {
      */
     async getAction() {
         const model = this.model('admin/user') as UserModel;
-        const data = await model.getUser(this.get());
+        const jurisdictionModel = this.model('admin/jurisdiction') as JurisdictionModel;
+        const urm = this.model('admin/user_role') as UserRoleModel;
+        const rjm = this.model('admin/role_jurisdiction') as RoleJurisdictionModel;
+        const userInfo: any = await this.session('userInfo');
+        const data = this.get('token') ? await model.getUserInfoByToken(userInfo.id) : await model.getUser(this.get());
+        if (this.get('token')) {
+            // 获取用户权限列表
+            const roleId: number | string = await urm.getUserRole(userInfo.id);
+            const jurisdictionIdList: any[] = await rjm.getRoleJurisdiction(roleId);
+            const access = await jurisdictionModel.getJurisdictionListNoPage({
+                jurisdictionIdList
+            });
+            data.access = access.map((item: any) => {
+                return item.code;
+            });
+        }
         return this.success(data);
     }
 
