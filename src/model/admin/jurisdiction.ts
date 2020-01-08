@@ -1,4 +1,4 @@
-import { think } from 'thinkjs';
+import {think} from 'thinkjs';
 
 interface IGetJurisdictionList { // 权限列表入参
     page?: number;
@@ -96,10 +96,37 @@ export default class extends think.Model {
                 }
             });
         }
+
         ancestors.forEach((item: IGetJurisdictionTreeItem) => {
             getLeafCountTree(item, item.id);
         });
         return ancestors;
+    }
+
+    /**
+     * @description 递归子资源列表
+     * @param result
+     */
+    reconsitutionList(result: any): any[] {
+        function getLeafCountTree(item: IGetJurisdictionTreeItem, id: number) {
+            if (id !== 0 && !result.some((i: { parent_id: number; }) => i.parent_id === id)) {
+                return false;
+            }
+            result.forEach((obj: IGetJurisdictionTreeItem) => {
+                if (obj.parent_id === id) {
+                    item.children.push(obj);
+                    getLeafCountTree(obj, obj.id);
+                }
+            });
+        }
+
+        result.forEach((item: IGetJurisdictionTreeItem) => {
+            item.children = [];
+            item.value = item.id;
+            item.label = item.name;
+            getLeafCountTree(item, item.id);
+        });
+        return result;
     }
 
     /**
@@ -124,6 +151,29 @@ export default class extends think.Model {
     }
 
     /**
+     * @description 获取指定资源code下的资源列表
+     * @param {string} sourceCode 资源code
+     */
+    async getSourceChildrenList(sourceCode: string) {
+        const result = await this.field('t_jurisdiction.id').where({code: sourceCode}).find();
+        return await this.field('t_jurisdiction.*').where({
+            parent_id: result.id
+        }).select();
+    }
+
+    /**
+     * @description 返回当前资源code下的资源列表
+     * @param {string} sourceCode 资源code
+     */
+    async getSourceCodeList(sourceCode: string) {
+        const result = await this.getSourceChildrenList(sourceCode);
+        console.log('***', result);
+        return result.map((item: any) => {
+            return item.code;
+        });
+    }
+
+    /**
      * @description 添加权限
      * @param {Object} params 权限
      */
@@ -143,9 +193,9 @@ export default class extends think.Model {
 
     /**
      * @description 删除权限
-     * @param {Int} id 权限id
+     * @param {int} id 权限id
      */
     async deleteJurisdiction(id: number | string) {
-        return this.where({ id }).delete();
+        return this.where({id}).delete();
     }
 }

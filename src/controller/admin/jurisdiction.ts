@@ -2,7 +2,7 @@ import BaseRest from '../rest';
 import JurisdictionModel from '../../model/admin/jurisdiction';
 import UserRoleModel from '../../model/admin/user_role';
 import RoleJurisdictionModel from '../../model/admin/role_jurisdiction';
-import { think } from 'thinkjs';
+import {think} from 'thinkjs';
 
 export default class extends BaseRest {
     /**
@@ -13,8 +13,7 @@ export default class extends BaseRest {
         const urm = this.model('admin/user_role') as UserRoleModel;
         const rjm = this.model('admin/role_jurisdiction') as RoleJurisdictionModel;
         const roleId: number | string = await urm.getUserRole(userInfo.id);
-        const jurisdictionIdList: any[] = await rjm.getRoleJurisdiction(roleId);
-        this.ctx.state.jurisdictionIdList = jurisdictionIdList;
+        this.ctx.state.jurisdictionIdList = await rjm.getRoleJurisdiction(roleId);
     }
 
     /**
@@ -25,8 +24,15 @@ export default class extends BaseRest {
         const getParams: object = this.get('all') ? this.get() : Object.assign({}, this.get(), {
             jurisdictionIdList: this.ctx.state.jurisdictionIdList // 权限id列表
         });
-        const data = this.get('limit') > 998 ? await model.getJurisdictionListNoPage(getParams) : await model.getJurisdictionList(getParams);
-        return this.success(data);
+        if (this.get('getSourceCode') && this.get('sourceCode')) { // 每次进入页面获取当前菜单下的资源code
+            return this.success(await model.getSourceCodeList(this.get('sourceCode')));
+        }
+        if (this.get('sourceCode')) { // 获取资源code下的资源列表
+            return this.success(await model.getSourceChildrenList(this.get('sourceCode')));
+        } else {
+            const data = this.get('limit') > 998 ? await model.getJurisdictionListNoPage(getParams) : await model.getJurisdictionList(getParams);
+            return this.success(data);
+        }
     }
 
     /**

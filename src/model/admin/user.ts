@@ -4,6 +4,7 @@ interface IGetUserParams { // 获取用户入参
     page?: number;
     limit?: number;
     username?: string;
+    name?: string;
     status?: number | string;
     startDate?: string;
     endDate?: string;
@@ -11,12 +12,14 @@ interface IGetUserParams { // 获取用户入参
 
 interface IGetUserData { // 数据库查询字段
     username?: string[];
+    name?: string[];
     status?: number | string;
     create_time?: string[];
 }
 
 interface IAddUserParams { // 添加用户入参
     username: string;
+    name?: string;
     password: string;
     status: number | string;
     create_user?: number | string;
@@ -28,6 +31,7 @@ interface IAddUserParams { // 添加用户入参
 interface IUpdateUserInfoParams { // 修改用户信息
     id: number | string;
     username: string;
+    name?: string;
     password: string;
     status: number | string;
     update_user?: number | string;
@@ -35,6 +39,19 @@ interface IUpdateUserInfoParams { // 修改用户信息
 }
 
 export default class extends think.Model {
+    /**
+     * @description 关联查询用户_角色表
+     */
+    get relation() {
+        return {
+            role: {
+                type: think.Model.MANY_TO_MANY,
+                rModel: 'user_role',
+                rfKey: 'role_id',
+                field: 'id,name'
+            }
+        };
+    }
     /**
      * @description 获取用户
      * @param {Object} params
@@ -44,13 +61,23 @@ export default class extends think.Model {
         if (params.username) {
             data.username = ['like', '%' + params.username + '%'];
         }
+        if (params.name) {
+            data.name = ['like', '%' + params.name + '%'];
+        }
         if (params.status) {
             data.status = params.status;
         }
         if (params.startDate && params.endDate) {
             data.create_time = ['between', params.startDate + ',' + params.endDate];
         }
-        return await this.field('id,username,status,create_time,update_time').where(data).page(params.page, params.limit).countSelect();
+        const result: any = await this.where(data).page(params.page, params.limit).countSelect();
+        // 处理role_id层级结构
+        result.data.forEach((item: { role_id: number, role: any, role_name: string }) => {
+            item.role_id = item.role[0].id;
+            item.role_name = item.role[0].name;
+            delete item.role;
+        });
+        return result;
     }
 
     /**

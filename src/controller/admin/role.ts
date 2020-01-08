@@ -52,7 +52,36 @@ export default class extends BaseRest {
      * @description 修改角色
      */
     async putAction() {
-
+        const model = this.model('admin/role') as RoleModel;
+        const roleAndJurisdictionModel = this.model('admin/role_jurisdiction') as RoleJurisdictionModel;
+        const userInfo: any = await this.session('userInfo');
+        await model.updateRole({
+            id: this.id,
+            name: this.post('name'),
+            status: this.post('status'),
+            update_user: userInfo.id,
+            update_username: userInfo.username
+        });
+        const roleHasJurisdiction: any[] = await roleAndJurisdictionModel.getRoleJurisdiction(this.id);
+        const addList = this.post('jurisdiction').filter((x: any) => !new Set(roleHasJurisdiction).has(x));
+        const deleteList = roleHasJurisdiction.filter((x: any) => !new Set(this.post('jurisdiction')).has(x));
+        if (addList.length > 0) { // 有新增权限时添加权限
+            const jurisdiction = addList.map((jurisdictionId: number) => { // 关联表更新角色对应权限
+                return {
+                    role_id: this.id,
+                    jurisdiction_id: jurisdictionId,
+                    create_user: userInfo.id,
+                    create_username: userInfo.username,
+                    update_user: userInfo.id,
+                    update_username: userInfo.username
+                };
+            });
+            await roleAndJurisdictionModel.addRoleJurisdiction(jurisdiction);
+        }
+        if (deleteList.length > 0) {
+            await roleAndJurisdictionModel.deleteRoleJurisdiction(this.id, deleteList);
+        }
+        return this.success(null, '修改成功');
     }
 
     /**
@@ -60,7 +89,11 @@ export default class extends BaseRest {
      */
     async deleteAction() {
         const model = this.model('admin/role') as RoleModel;
-        await model.deleteRole(this.id);
-        return this.success(null, '删除成功');
+        try {
+            await model.deleteRole(this.id);
+            return this.success(null, '删除成功');
+        } catch (error) {
+            return this.fail(1, '系统异常，请稍后再试');
+        }
     }
 }

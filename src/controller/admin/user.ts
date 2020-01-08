@@ -43,6 +43,7 @@ export default class extends BaseRest {
         }
         const userId = await model.addUser({
             username: this.post('username'),
+            name: this.post('name'),
             password: this.post('password'),
             status: this.post('status'),
             create_user: userInfo.id,
@@ -53,7 +54,7 @@ export default class extends BaseRest {
         // 联动添加用户角色
         await userAndRoleModel.addUserRole({
             user_id: userId,
-            role_id: this.post('role'),
+            role_id: this.post('role_id'),
             create_user: userInfo.id,
             create_username: userInfo.username,
             update_user: userInfo.id,
@@ -67,12 +68,21 @@ export default class extends BaseRest {
      */
     async putAction() {
         const model = this.model('admin/user') as UserModel;
+        const userAndRoleModel = this.model('admin/user_role') as UserRoleModel;
         const userInfo: any = await this.session('userInfo');
         await model.updateUserInfo({
             id: this.id,
             username: this.post('username'),
+            name: this.post('name'),
             password: this.post('password'),
             status: this.post('status'),
+            update_user: userInfo.id,
+            update_username: userInfo.username
+        });
+        // 联动更新用户角色
+        await userAndRoleModel.updateUserRole({
+            user_id: this.id,
+            role_id: this.post('role'),
             update_user: userInfo.id,
             update_username: userInfo.username
         });
