@@ -1,5 +1,6 @@
 import BaseRest from '../rest';
 import ArticleModel from '../../model/admin/article';
+import {think} from 'thinkjs';
 
 export default class extends BaseRest {
     /**
@@ -16,14 +17,18 @@ export default class extends BaseRest {
      */
     async postAction() {
         const model = this.model('admin/article') as ArticleModel;
-        await model.addArticle({
-            title: this.post('title'),
-            description: this.post('description'),
-            content: this.post('content'),
-            publish_status: this.post('publish_status'),
-            category_id: this.post('category_id'),
-            thumb: this.post('thumb')
-        });
+        if (think.isArray(this.post())) { // 批量添加
+            await model.addManyArticle(this.post());
+        } else {
+            await model.addArticle({
+                title: this.post('title'),
+                description: this.post('description'),
+                content: this.post('content'),
+                publish_status: this.post('publish_status'),
+                category_id: this.post('category_id'),
+                thumb: this.post('thumb')
+            });
+        }
         return this.success(null, '添加成功');
     }
 

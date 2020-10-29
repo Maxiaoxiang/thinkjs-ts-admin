@@ -1,4 +1,4 @@
-import { think } from 'thinkjs';
+import {think} from 'thinkjs';
 
 interface IGetArticleListParams { // 列表查询入参
     page?: number;
@@ -57,6 +57,17 @@ export default class extends think.Model {
     }
 
     /**
+     * @description 批量添加
+     * @param {Object} params 文章信息
+     * @returns {Promise<void>}
+     */
+    async addManyArticle(params: any) {
+        return this.addMany(params, {
+            ignore: true // 使用 INSERT IGNORE INTO
+        });
+    }
+
+    /**
      * @description 修改文章信息
      * @param {Object} params 文章信息
      */
@@ -71,6 +82,6 @@ export default class extends think.Model {
      * @param {Int} id 文章id
      */
     async deleteArticle(id: number | string) {
-        return this.where({ id }).delete();
+        return this.where({id}).delete();
     }
 }

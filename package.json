@@ -9,6 +9,7 @@
     "lint": "tslint \"src/**/*.ts\""
   },
   "dependencies": {
+    "node-cmd": "^3.0.0",
     "qiniu": "^7.2.2",
     "qiniu-js": "^2.5.5",
     "think-cache": "^1.0.7",

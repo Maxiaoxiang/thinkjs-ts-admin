@@ -147,7 +147,7 @@ export default class extends think.Model {
         if (params.jurisdictionIdList) {
             data.id = ['IN', params.jurisdictionIdList];
         }
-        return await this.field('t_jurisdiction.*').where(data).page(params.page, params.limit).select();
+        return await this.field('t_jurisdiction.*').where(data).select();
     }
 
     /**
