@@ -20,7 +20,7 @@ interface IProductParams { // 添加商品入参
     name: string;
     description?: string;
     publish_status: number | string;
-    category_id?: number | string;
+    category_id?: string;
     pic_id?: number | string;
 }
 
