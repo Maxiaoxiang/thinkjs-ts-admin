@@ -18,6 +18,7 @@ module.exports = [
     /**
      * www前台模块
      */
+    ['/www/banner/:id?', '/www/banner', 'rest'], // 轮播图列表
     ['/www/product/:id?', '/www/product', 'rest'], // 商品列表
     /**
      * 公用接口

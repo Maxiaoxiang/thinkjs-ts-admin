@@ -42,7 +42,7 @@ module.exports = class extends BaseRest {
     const formUploader = new qiniu.form_up.FormUploader(config);
     const putExtra = new qiniu.form_up.PutExtra();
     const uploadQiniu = new Promise((resolve, reject) => {
-      formUploader.putFile(uploadToken, filename, localFile, putExtra, (respErr: any, respBody: unknown, respInfo: { statusCode: number; }) => {
+      formUploader.putFile(uploadToken, filename, localFile, putExtra, (respErr: any, respBody: any, respInfo: { statusCode: number; }) => {
         if (respErr) {
           return reject(respErr);
         }
@@ -52,6 +52,7 @@ module.exports = class extends BaseRest {
       });
     });
     const res: any = await uploadQiniu; // 七牛回调
+    console.log('###', res);
     // 写入数据库
     if (res && res.key) {
       await model.uploadFile({
